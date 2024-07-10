@@ -13,16 +13,27 @@ export class FeaturedImageService {
     private readonly imageRepository: Repository<Image>,
   ) {}
 
+  /**
+   * 添加推荐图片
+   * @param imageId
+   */
   async addFeaturedImage(imageId: FindOneOptions<Image>): Promise<FeaturedImage> {
     const image = await this.imageRepository.findOne(imageId);
     const featuredImage = this.featuredImageRepository.create({ image });
     return this.featuredImageRepository.save(featuredImage);
   }
 
+  /**
+   * 获取所有推荐图片
+   */
   async findAll(): Promise<FeaturedImage[]> {
     return this.featuredImageRepository.find({ relations: ['image'] });
   }
 
+  /**
+   * 删除推荐图片
+   * @param id
+   */
   async remove(id: number): Promise<void> {
     await this.featuredImageRepository.delete(id);
   }

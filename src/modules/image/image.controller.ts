@@ -4,10 +4,12 @@ import { ImageService } from './image.service';
 import { CreateImageDto } from './dtos/create-image.dto';
 import { UpdateImageDto } from './dtos/update-image.dto';
 import { Request } from 'express';
-import { ApiOperation } from '@nestjs/swagger';
-import {UserPayload} from "/@/modules/user/entities/user.interface";
+import { ApiOperation, ApiResponse, ApiTags, ApiQuery, ApiParam } from '@nestjs/swagger';
+import { UserPayload } from "/@/modules/user/entities/user.interface";
+
 
 @Controller('images')
+@ApiTags('上传图片相关')
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
 
@@ -19,6 +21,10 @@ export class ImageController {
    */
   @Post('upload')
   @ApiOperation({ summary: '上传图片' })
+  @ApiQuery({ name: 'albumId', description: '图片ID', required: true })
+  @ApiResponse({ status: 200, description: '上传成功', type: CreateImageDto })
+  @ApiResponse({ status: 400, description: '上传失败' })
+  @ApiParam({ name: 'albumId', description: '图片ID' })
   @UseInterceptors(FileInterceptor('file'))
   async upload(
     @Body() createImageDto: CreateImageDto,
@@ -38,6 +44,12 @@ export class ImageController {
    * @param keyword 关键词
    */
   @Get()
+  @ApiOperation({ summary: '获取所有图片' })
+  @ApiQuery({ name: 'albumId', description: '专辑ID', required: true })
+  @ApiQuery({ name: 'page', description: '页码', required: false })
+  @ApiQuery({ name: 'limit', description: '每页数量', required: false })
+  @ApiQuery({ name: 'keyword', description: '关键词', required: false })
+  @ApiResponse({ status: 200, description: '获取成功', type: [CreateImageDto] })
   async findAll(
     @Query('albumId') albumId: string,
     @Query('page') page: number,
@@ -52,6 +64,7 @@ export class ImageController {
    * @param id 图片ID
    */
   @Get(':id')
+  @ApiOperation({ summary: '获取单张图片' })
   async findOne(@Param('id') id: string) {
     return this.imageService.findOne(+id);
   }
@@ -62,6 +75,7 @@ export class ImageController {
    * @param updateImageDto 更新图片信息的DTO
    */
   @Put(':id')
+  @ApiOperation({ summary: '更新图片信息' })
   async update(@Param('id') id: string, @Body() updateImageDto: UpdateImageDto) {
     return this.imageService.update(+id, updateImageDto);
   }
@@ -71,6 +85,7 @@ export class ImageController {
    * @param id 图片ID
    */
   @Delete(':id')
+  @ApiOperation({ summary: '删除图片' })
   async remove(@Param('id') id: string) {
     return this.imageService.remove(+id);
   }

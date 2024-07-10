@@ -13,10 +13,18 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
+  /**
+   * 注册
+   * @param createUserDto
+   */
   async register(createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
 
+  /**
+   * 登录
+   * @param loginUserDto
+   */
   async login(loginUserDto: LoginUserDto): Promise<{ access_token: string }> {
     const user = await this.userService.findByCredentials(loginUserDto);
     const payload: JwtPayload = { username: user.username, sub: user.userId };
@@ -25,9 +33,19 @@ export class AuthService {
     };
   }
 
+  /**
+   * 验证用户
+   * @param userId
+   */
   async validateUser(userId: number): Promise<User> {
     return this.userService.findOne(userId);
   }
+
+  /**
+   * 验证用户密码
+   * @param username
+   * @param password
+   */
   async validateUserByUsernameAndPassword(username: string, password: string): Promise<User> {
     const user = await this.userService.findByUsername(username);
     if (user && await this.userService.checkPassword(password, user.password)) {

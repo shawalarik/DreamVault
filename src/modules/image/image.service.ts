@@ -23,6 +23,12 @@ export class ImageService {
     private readonly albumRepository: Repository<Album>,
   ) {}
 
+  /**
+   * 上传图片
+   * @param createImageDto
+   * @param file
+   * @param userId
+   */
   async uploadImage(createImageDto: CreateImageDto, file: Express.Multer.File, userId: number): Promise<Image> {
     let buffer: Buffer;
 
@@ -74,6 +80,11 @@ export class ImageService {
     return this.imageRepository.save(image);
   }
 
+  /**
+   * 获取所有图片
+   * @param url
+   * @private
+   */
   private async downloadImage(url: string): Promise<Buffer> {
     const cookieJar = new tough.CookieJar();
     const axiosInstance = wrapper(axios.create({ jar: cookieJar, withCredentials: true }));
@@ -92,6 +103,10 @@ export class ImageService {
     }
   }
 
+  /**
+   * 更新图片信息
+   * @param query
+   */
   async findAll(query: any): Promise<Image[]> {
     const { albumId, page = 1, limit = 10, keyword } = query;
     const qb = this.imageRepository.createQueryBuilder('image')
@@ -111,6 +126,10 @@ export class ImageService {
     return qb.getMany();
   }
 
+  /**
+   * 获取单个图片
+   * @param id
+   */
   async findOne(id: number): Promise<Image> {
     const imageOptions: FindOneOptions<Image> = {
       where: { imageId: id }, // 确保字段名与实体定义相匹配
@@ -123,11 +142,20 @@ export class ImageService {
     return image;
   }
 
+  /**
+   * 更新图片信息
+   * @param id
+   * @param updateImageDto
+   */
   async update(id: number, updateImageDto: UpdateImageDto): Promise<Image> {
     await this.imageRepository.update(id, updateImageDto);
     return this.findOne(id);
   }
 
+  /**
+   * 删除图片
+   * @param id
+   */
   async remove(id: number): Promise<void> {
     const result = await this.imageRepository.delete(id);
     if (result.affected === 0) {

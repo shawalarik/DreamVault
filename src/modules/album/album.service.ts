@@ -13,15 +13,26 @@ export class AlbumService {
     private readonly albumRepository: Repository<Album>,
   ) {}
 
+  /**
+   * 创建相册
+   * @param createAlbumDto
+   */
   async create(createAlbumDto: CreateAlbumDto): Promise<Album> {
     const album = this.albumRepository.create(createAlbumDto);
     return this.albumRepository.save(album);
   }
 
+  /**
+   * 获取所有相册
+   */
   async findAll(): Promise<Album[]> {
     return this.albumRepository.find();
   }
 
+  /**
+   * 获取单个相册
+   * @param id
+   */
   async findOne(id: number): Promise<Album> {
     const options: FindOneOptions<Album> = {
       where: { albumId: id }, // 确保字段名与实体定义相匹配
@@ -29,11 +40,20 @@ export class AlbumService {
     return this.albumRepository.findOne(options);
   }
 
+  /**
+   * 更新相册
+   * @param id
+   * @param updateAlbumDto
+   */
   async update(id: number, updateAlbumDto: UpdateAlbumDto): Promise<Album> {
     await this.albumRepository.update(id, updateAlbumDto);
     return this.findOne(id);
   }
 
+  /**
+   * 删除相册
+   * @param id
+   */
   async remove(id: number): Promise<void> {
     await this.albumRepository.delete(id);
   }
